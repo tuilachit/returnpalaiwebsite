@@ -96,7 +96,7 @@ export const Features: React.FC<FeaturesProps> = ({ onLearnMoreClick }) => {
           </h2>
           <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
             We're focused on building features that solve real problems. No fluff, no complexity - 
-            just tools that help you never lose money on forgotten returns. <span className="text-accent-400 font-semibold">Currently in beta with more features coming soon.</span>
+            just a focused concept for tracking return windows. <span className="text-accent-400 font-semibold">This prototype is currently being validated.</span>
           </p>
         </StorySection>
 
@@ -107,7 +107,7 @@ export const Features: React.FC<FeaturesProps> = ({ onLearnMoreClick }) => {
           initial="hidden"
           animate={isIntersecting ? "visible" : "hidden"}
         >
-          {features.map((feature, index) => {
+          {features.map((feature) => {
             const IconComponent = iconMap[feature.icon as keyof typeof iconMap];
             
             return (
