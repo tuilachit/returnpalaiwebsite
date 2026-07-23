@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Download, Play, Star, Users, Award } from 'lucide-react';
+import { Download, Play } from 'lucide-react';
 import { Button } from './ui/Button';
 import { StorySection } from './StorySection';
 
@@ -25,24 +25,6 @@ export const Hero: React.FC<HeroProps> = ({ onDownloadClick, onDemoClick }) => {
         staggerChildren: 0.2,
         duration: 0.6,
       },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' },
-    },
-  };
-
-  const statsVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.5, delay: 0.8 },
     },
   };
 
@@ -130,9 +112,8 @@ export const Hero: React.FC<HeroProps> = ({ onDownloadClick, onDemoClick }) => {
             delay={0.4}
             className="text-xl sm:text-2xl text-white/80 mb-12 max-w-4xl mx-auto leading-relaxed"
           >
-            A simple app built by a small team in Sydney. We help you track return deadlines and never lose money on forgotten purchases again. 
-            <span className="font-semibold text-white"> Join thousands of Australians</span> who lose 
-            <span className="font-semibold text-red-400"> $340+ annually</span> on missed returns.
+            An early product concept built in Sydney to explore a simpler way to
+            track return deadlines and act before a return window closes.
           </StorySection>
 
           {/* CTA Buttons */}
