@@ -111,7 +111,7 @@ export const SolutionTransition: React.FC = () => {
               { label: 'Receipt Scanning', icon: '📱' },
               { label: 'Smart Reminders', icon: '⏰' },
               { label: 'Simple Tracking', icon: '📋' },
-            ].map((benefit, index) => (
+            ].map((benefit) => (
               <motion.div
                 key={benefit.label}
                 className="text-center"
