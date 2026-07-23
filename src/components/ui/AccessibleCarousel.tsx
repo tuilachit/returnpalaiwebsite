@@ -32,6 +32,26 @@ export const AccessibleCarousel: React.FC<AccessibleCarouselProps> = ({
   const carouselRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % items.length);
+    setIsUserInteracting(true);
+  }, [items.length]);
+
+  const goToPrevious = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+    setIsUserInteracting(true);
+  }, [items.length]);
+
+  const goToSlide = useCallback((index: number) => {
+    setCurrentIndex(index);
+    setIsUserInteracting(true);
+  }, []);
+
+  const toggleAutoPlay = useCallback(() => {
+    setIsPlaying(!isPlaying);
+    setIsUserInteracting(true);
+  }, [isPlaying]);
+
   // Handle keyboard navigation
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
     switch (event.key) {
@@ -57,27 +77,7 @@ export const AccessibleCarousel: React.FC<AccessibleCarouselProps> = ({
         toggleAutoPlay();
         break;
     }
-  }, [items.length]);
-
-  const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % items.length);
-    setIsUserInteracting(true);
-  }, [items.length]);
-
-  const goToPrevious = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
-    setIsUserInteracting(true);
-  }, [items.length]);
-
-  const goToSlide = useCallback((index: number) => {
-    setCurrentIndex(index);
-    setIsUserInteracting(true);
-  }, []);
-
-  const toggleAutoPlay = useCallback(() => {
-    setIsPlaying(!isPlaying);
-    setIsUserInteracting(true);
-  }, [isPlaying]);
+  }, [goToNext, goToPrevious, goToSlide, items.length, toggleAutoPlay]);
 
   // Auto-play functionality with pause on interaction
   useEffect(() => {
