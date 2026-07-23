@@ -53,7 +53,7 @@ export const AccessibleInfiniteScroll: React.FC<AccessibleInfiniteScrollProps> =
     if (loading || !hasMore) return;
 
     try {
-      const newItems = await loadMore();
+      await loadMore();
       const nextPageItems = items.slice(
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
@@ -73,7 +73,7 @@ export const AccessibleInfiniteScroll: React.FC<AccessibleInfiniteScrollProps> =
         }
       }, 100);
       
-    } catch (err) {
+    } catch {
       setAnnounceText('Failed to load more items. Please try again.');
     }
   }, [loading, hasMore, loadMore, items, currentPage, itemsPerPage, displayedItems.length]);
@@ -219,7 +219,7 @@ export const AccessibleInfiniteScroll: React.FC<AccessibleInfiniteScrollProps> =
         )}
 
         {/* Manual load more button */}
-        {hasMore && !loading && !error && (
+        {enableManualLoad && hasMore && !loading && !error && (
           <div className="space-y-2">
             <Button
               variant="secondary"
