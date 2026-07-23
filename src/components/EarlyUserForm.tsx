@@ -47,7 +47,10 @@ export const EarlyUserForm: React.FC<EarlyUserFormProps> = ({ onSuccess, classNa
     'Other'
   ];
 
-  const handleInputChange = (field: keyof EarlyUserInsert, value: any) => {
+  const handleInputChange = <K extends keyof EarlyUserInsert>(
+    field: K,
+    value: EarlyUserInsert[K]
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error status when user starts typing
     if (submitStatus === 'error') {
@@ -96,7 +99,7 @@ export const EarlyUserForm: React.FC<EarlyUserFormProps> = ({ onSuccess, classNa
         setSubmitStatus('error');
         setErrorMessage(result.error || 'Something went wrong. Please try again.');
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
       setErrorMessage('Network error. Please check your connection and try again.');
     } finally {
