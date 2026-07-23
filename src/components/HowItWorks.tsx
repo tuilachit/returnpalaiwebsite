@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Camera, Clock, Bell, Package, ArrowDown, CheckCircle } from 'lucide-react';
+import { Camera, Clock, Bell, Package, CheckCircle } from 'lucide-react';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { steps } from '../data/content';
 
