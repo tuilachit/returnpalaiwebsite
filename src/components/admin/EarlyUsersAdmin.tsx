@@ -5,12 +5,18 @@ import { EarlyUsersService } from '../../services/earlyUsers';
 import type { EarlyUser } from '../../lib/supabase';
 import { Button } from '../ui/Button';
 
+type Statistics = NonNullable<
+  Awaited<ReturnType<typeof EarlyUsersService.getStatistics>>['data']
+>;
+type UserFilter = 'all' | EarlyUser['status'];
+type UserSort = 'created_at' | 'interest_level' | 'name';
+
 export const EarlyUsersAdmin: React.FC = () => {
   const [users, setUsers] = useState<EarlyUser[]>([]);
-  const [statistics, setStatistics] = useState<any>(null);
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'contacted' | 'converted'>('all');
-  const [sortBy, setSortBy] = useState<'created_at' | 'interest_level' | 'name'>('created_at');
+  const [filter, setFilter] = useState<UserFilter>('all');
+  const [sortBy, setSortBy] = useState<UserSort>('created_at');
 
   useEffect(() => {
     loadData();
@@ -182,7 +188,7 @@ export const EarlyUsersAdmin: React.FC = () => {
                 <Filter className="w-4 h-4 text-gray-500" />
                 <select
                   value={filter}
-                  onChange={(e) => setFilter(e.target.value as any)}
+                  onChange={(e) => setFilter(e.target.value as UserFilter)}
                   className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
                 >
                   <option value="all">All Users</option>
@@ -194,7 +200,7 @@ export const EarlyUsersAdmin: React.FC = () => {
 
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as UserSort)}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
               >
                 <option value="created_at">Sort by Date</option>
@@ -310,7 +316,9 @@ export const EarlyUsersAdmin: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
                         value={user.status}
-                        onChange={(e) => updateUserStatus(user.id, e.target.value as any)}
+                        onChange={(e) =>
+                          updateUserStatus(user.id, e.target.value as EarlyUser['status'])
+                        }
                         className={`text-xs rounded-full px-3 py-1 border-0 ${
                           user.status === 'pending' 
                             ? 'bg-yellow-100 text-yellow-800'
