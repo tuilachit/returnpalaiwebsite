@@ -14,15 +14,6 @@ export interface Step {
   icon: string;
 }
 
-export interface Testimonial {
-  id: string;
-  name: string;
-  avatar: string;
-  rating: number;
-  text: string;
-  title: string;
-}
-
 export interface NavigationItem {
   id: string;
   label: string;
