@@ -1,4 +1,11 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useId,
+  useMemo,
+} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check } from 'lucide-react';
 
@@ -36,27 +43,22 @@ export const AccessibleDropdown: React.FC<AccessibleDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredOptions, setFilteredOptions] = useState(options);
   
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
 
   const selectedOption = options.find(option => option.value === value);
+  const filteredOptions = useMemo(() => {
+    const normalizedQuery = searchQuery.toLowerCase();
+    if (!normalizedQuery) return options;
 
-  // Filter options based on search query
-  useEffect(() => {
-    if (searchQuery) {
-      const filtered = options.filter(option =>
-        option.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        option.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredOptions(filtered);
-      setFocusedIndex(0);
-    } else {
-      setFilteredOptions(options);
-    }
-  }, [searchQuery, options]);
+    return options.filter(
+      option =>
+        option.label.toLowerCase().includes(normalizedQuery) ||
+        option.description?.toLowerCase().includes(normalizedQuery)
+    );
+  }, [options, searchQuery]);
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
@@ -125,6 +127,7 @@ export const AccessibleDropdown: React.FC<AccessibleDropdownProps> = ({
         // Type-ahead search
         if (event.key.length === 1 && isOpen) {
           setSearchQuery(prev => prev + event.key);
+          setFocusedIndex(0);
           
           // Clear search after 1 second of no typing
           if (searchTimeoutRef.current) {
@@ -171,13 +174,16 @@ export const AccessibleDropdown: React.FC<AccessibleDropdownProps> = ({
     }
   };
 
-  const dropdownId = `dropdown-${Math.random().toString(36).substr(2, 9)}`;
+  const generatedId = useId();
+  const dropdownId = `dropdown-${generatedId}`;
+  const labelId = `${dropdownId}-label`;
   const listId = `${dropdownId}-list`;
 
   return (
     <div className={`relative ${className}`}>
       {/* Label */}
       <label
+        id={labelId}
         htmlFor={dropdownId}
         className="block text-sm font-medium text-gray-700 mb-2"
       >
@@ -201,7 +207,7 @@ export const AccessibleDropdown: React.FC<AccessibleDropdownProps> = ({
         }`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-labelledby={`${dropdownId}-label`}
+        aria-labelledby={labelId}
         aria-describedby={error ? `${dropdownId}-error` : undefined}
         disabled={disabled}
         onKeyDown={handleKeyDown}
@@ -247,7 +253,7 @@ export const AccessibleDropdown: React.FC<AccessibleDropdownProps> = ({
               ref={listRef}
               id={listId}
               role="listbox"
-              aria-labelledby={dropdownId}
+              aria-labelledby={labelId}
               className="py-1"
             >
               {filteredOptions.length === 0 ? (
