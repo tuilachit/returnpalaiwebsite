@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Users, TrendingUp, Mail, Phone, MapPin, Calendar, Filter, Download, RefreshCw } from 'lucide-react';
 import { EarlyUsersService } from '../../services/earlyUsers';
@@ -18,12 +18,7 @@ export const EarlyUsersAdmin: React.FC = () => {
   const [filter, setFilter] = useState<UserFilter>('all');
   const [sortBy, setSortBy] = useState<UserSort>('created_at');
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    setLoading(true);
+  const fetchData = useCallback(async () => {
     try {
       const [usersResult, statsResult] = await Promise.all([
         EarlyUsersService.getAllEarlyUsers(),
@@ -42,7 +37,40 @@ export const EarlyUsersAdmin: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    await fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    let ignore = false;
+
+    Promise.all([
+      EarlyUsersService.getAllEarlyUsers(),
+      EarlyUsersService.getStatistics()
+    ])
+      .then(([usersResult, statsResult]) => {
+        if (ignore) return;
+        if (usersResult.success && usersResult.data) {
+          setUsers(usersResult.data);
+        }
+        if (statsResult.success && statsResult.data) {
+          setStatistics(statsResult.data);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load data:', error);
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const updateUserStatus = async (userId: string, status: 'pending' | 'contacted' | 'converted') => {
     const result = await EarlyUsersService.updateUserStatus(userId, status);
