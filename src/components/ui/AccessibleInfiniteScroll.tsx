@@ -33,41 +33,37 @@ export const AccessibleInfiniteScroll: React.FC<AccessibleInfiniteScrollProps> =
   className = "",
   ariaLabel = "Content list"
 }) => {
-  const [displayedItems, setDisplayedItems] = useState<InfiniteScrollItem[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(itemsPerPage);
   const [autoLoadEnabled, setAutoLoadEnabled] = useState(false);
   const [announceText, setAnnounceText] = useState('');
+  const displayedItems = items.slice(0, visibleCount);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const lastItemRef = useRef<HTMLDivElement>(null);
-
-  // Initialize displayed items
-  useEffect(() => {
-    const initialItems = items.slice(0, itemsPerPage);
-    setDisplayedItems(initialItems);
-  }, [items, itemsPerPage]);
 
   // Handle manual load more
   const handleLoadMore = useCallback(async () => {
     if (loading || !hasMore) return;
 
     try {
-      await loadMore();
-      const nextPageItems = items.slice(
-        currentPage * itemsPerPage,
-        (currentPage + 1) * itemsPerPage
-      );
-      
-      setDisplayedItems(prev => [...prev, ...nextPageItems]);
-      setCurrentPage(prev => prev + 1);
+      const previousLength = displayedItems.length;
+      const loadedItems = await loadMore();
+      const loadedCount = loadedItems.length || itemsPerPage;
+      setVisibleCount(prev => prev + loadedCount);
       
       // Announce to screen readers
-      setAnnounceText(`Loaded ${nextPageItems.length} more items. ${displayedItems.length + nextPageItems.length} of ${items.length} items shown.`);
+      setAnnounceText(
+        `Loaded ${loadedItems.length} more items. ${
+          previousLength + loadedItems.length
+        } items shown.`
+      );
       
       // Focus management - move focus to first new item
       setTimeout(() => {
-        const firstNewItem = containerRef.current?.children[displayedItems.length] as HTMLElement;
+        const firstNewItem = containerRef.current?.children[
+          previousLength
+        ] as HTMLElement;
         if (firstNewItem) {
           firstNewItem.focus();
         }
@@ -76,7 +72,7 @@ export const AccessibleInfiniteScroll: React.FC<AccessibleInfiniteScrollProps> =
     } catch {
       setAnnounceText('Failed to load more items. Please try again.');
     }
-  }, [loading, hasMore, loadMore, items, currentPage, itemsPerPage, displayedItems.length]);
+  }, [loading, hasMore, loadMore, itemsPerPage, displayedItems.length]);
 
   // Auto-load functionality with intersection observer
   useEffect(() => {
