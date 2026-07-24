@@ -26,14 +26,13 @@ export const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [isInView, setIsInView] = useState(false);
+  const [isInView, setIsInView] = useState(loading === 'eager');
   const imgRef = useRef<HTMLImageElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
     if (loading === 'eager') {
-      setIsInView(true);
       return;
     }
 
